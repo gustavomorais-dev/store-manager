@@ -1,31 +1,47 @@
-const { expect } = require('chai');
+const chai = require('chai');
 const sinon = require('sinon');
-const connection = require('../../../src/models/connection');
-const { productsModel } = require('../../../src/models');
+const sinonChai = require('sinon-chai');
+
+const { expect } = chai;
+chai.use(sinonChai);
+
+const { productsService } = require('../../../src/services');
+const { productsController } = require('../../../src/controllers');
 const { 
-  productsFromDB,
+  productsFromServiceOk,
   productsFromModel,
-  productFromDB,
+  productFromServiceOk,
   productFromModel,
 } = require('../mocks/products.mock');
+const HTTP_STATUS = require('../../../src/utils/statusHTTP');
 
-describe('Testes do PRODUCTS MODEL:', function () {
-  it('Recupera todos os produtos', async function () {
-    sinon.stub(connection, 'execute').resolves([productsFromDB]);
+describe('Testes do PRODUCTS CONTROLLER:', function () {
+  it('Recupera os produtos com sucesso - status 200', async function () {
+    sinon.stub(productsService, 'getProducts').resolves(productsFromServiceOk);
 
-    const products = await productsModel.findAll();
-    expect(products).to.be.an('array');
-    expect(products).to.have.lengthOf(3);
-    expect(products).to.be.deep.equal(productsFromModel);
+    const req = { params: { }, body: { } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    await productsController.getProducts(req, res);
+    expect(res.status).to.have.been.calledWith(HTTP_STATUS.OK);
+    expect(res.json).to.have.been.calledWith(productsFromModel);
   });
 
-  it('Recupera um produto pelo ID', async function () {
-    sinon.stub(connection, 'execute').resolves([productFromDB]);
+  it('Recupera um produto pelo ID com sucesso - status 200', async function () {
+    sinon.stub(productsService, 'getProductById').resolves(productFromServiceOk);
 
-    const input = 1;
-    const product = await productsModel.findById(input);
-    expect(product).to.be.an('object');
-    expect(product).to.be.deep.equal(productFromModel);
+    const req = { params: { id: 21 }, body: { } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    await productsController.getProductById(req, res);
+    expect(res.status).to.have.been.calledWith(HTTP_STATUS.OK);
+    expect(res.json).to.have.been.calledWith(productFromModel);
   });
 
   afterEach(function () {

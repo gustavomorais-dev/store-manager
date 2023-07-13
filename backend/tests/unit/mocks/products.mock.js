@@ -34,9 +34,27 @@ const productFromModel = {
   name: 'Martelo de Thor',
 };
 
+const productsFromServiceOk = {
+  status: 200,
+  data: productsFromModel,
+};
+
+const productFromServiceOk = {
+  status: 200,
+  data: productFromModel,
+};
+
+const productFromServiceNotFound = {
+  status: 200,
+  data: { message: 'Product not found' },
+};
+
 module.exports = {
   productsFromDB,
   productsFromModel,
   productFromDB,
   productFromModel,
+  productsFromServiceOk,
+  productFromServiceOk,
+  productFromServiceNotFound,
 };
