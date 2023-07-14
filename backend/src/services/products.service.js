@@ -1,5 +1,6 @@
 const { productsModel } = require('../models');
 const HTTP_STATUS = require('../utils/statusHTTP');
+const { validateProductName } = require('./validations/validationsInputValues');
 
 const getProducts = async () => {
   const products = await productsModel.findAll();
@@ -17,6 +18,16 @@ const getProductById = async (productId) => {
 };
 
 const createProduct = async (productName) => {
+  if (!productName) {
+    const message = '"name" is required';
+    return { status: HTTP_STATUS.BAD_REQUEST, data: { message } };
+  }
+
+  const validationError = await validateProductName({ name: productName });
+  if (validationError) {
+    return { status: validationError.status, data: { message: validationError.message } };
+  }
+
   const product = await productsModel.insert(productName);
 
   return { status: HTTP_STATUS.CREATED, data: product };
