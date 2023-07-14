@@ -35,6 +35,16 @@ const saleFromModel = [...saleFromDB];
 
 const saleFromService = [...saleFromModel];
 
+const salesFromServiceOk = {
+  status: 200,
+  data: salesFromService,
+};
+
+const saleFromServiceOk = {
+  status: 200,
+  data: saleFromService,
+};
+
 module.exports = {
   salesFromDB,
   salesFromModel,
@@ -42,4 +52,6 @@ module.exports = {
   saleFromDB,
   saleFromModel,
   saleFromService,
+  salesFromServiceOk,
+  saleFromServiceOk,
 };
