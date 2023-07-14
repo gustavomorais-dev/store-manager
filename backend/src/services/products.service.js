@@ -16,7 +16,14 @@ const getProductById = async (productId) => {
   return { status: HTTP_STATUS.OK, data: product };
 };
 
+const createProduct = async (productName) => {
+  const product = await productsModel.insert(productName);
+
+  return { status: HTTP_STATUS.CREATED, data: product };
+};
+
 module.exports = {
   getProducts,
   getProductById,
+  createProduct,
 };
