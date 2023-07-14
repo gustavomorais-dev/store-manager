@@ -1,4 +1,4 @@
-const { salesModel } = require('../models');
+const { salesModel, salesProductsModel } = require('../models');
 const HTTP_STATUS = require('../utils/statusHTTP');
 
 const getSales = async () => {
@@ -16,7 +16,29 @@ const getSaleById = async (saleId) => {
   return { status: HTTP_STATUS.OK, data: sale };
 };
 
+const createSale = async (saleDetails) => {
+  const saleId = await salesModel.insert();
+  const itemsSold = [];
+
+  const promises = saleDetails.map(async (product) => {
+    await salesProductsModel.insert({
+      saleId,
+      ...product,
+    });
+    itemsSold.push({ ...product });
+  });
+
+  await Promise.all(promises);
+  
+  const data = {
+    id: saleId,
+    itemsSold,
+  };
+  return { status: HTTP_STATUS.CREATED, data };
+};
+
 module.exports = {
   getSales,
   getSaleById,
+  createSale,
 };
