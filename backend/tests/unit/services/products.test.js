@@ -67,6 +67,24 @@ describe('Testes do PRODUCTS SERVICE:', function () {
     expect(responseService.data).to.be.deep.equal(createdProductFromModel);
   });
 
+  it('Retorna erro ao receber uma requisição sem a chave "name"', async function () {
+    const input = null;
+    const responseService = await productsService.createProduct(input);
+  
+    expect(responseService.status).to.be.equal(HTTP_STATUS.BAD_REQUEST);
+    expect(responseService.data).to.be.an('object');
+    expect(responseService.data.message).to.be.equal('"name" is required');
+  });  
+
+  it('Retorna erro ao receber uma requisição com a chave "name" menor que 5 caracteres', async function () {
+    const input = '1234';
+    const responseService = await productsService.createProduct(input);
+  
+    expect(responseService.status).to.be.equal(HTTP_STATUS.UNPROCESSABLE_ENTITY);
+    expect(responseService.data).to.be.an('object');
+    expect(responseService.data.message).to.be.equal('"name" length must be at least 5 characters long');
+  });  
+
   afterEach(function () {
     sinon.restore();
   });
