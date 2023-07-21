@@ -33,8 +33,21 @@ const createProduct = async (productName) => {
   return { status: HTTP_STATUS.CREATED, data: product };
 };
 
+const updateProduct = async (productId, newName) => {
+  let product = await productsModel.findById(productId);
+
+  if (!product) {
+    return { status: HTTP_STATUS.NOT_FOUND, data: { message: 'Product not found' } };
+  }
+
+  product = await productsModel.updateById(productId, newName);
+
+  return { status: HTTP_STATUS.OK, data: product };
+};
+
 module.exports = {
   getProducts,
   getProductById,
   createProduct,
+  updateProduct,
 };
