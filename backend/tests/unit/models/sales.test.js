@@ -24,6 +24,14 @@ describe('Testes do SALES MODEL:', function () {
     expect(sale).to.be.deep.equal(saleFromModel);
   });
 
+  it('Adiciona uma nova venda', async function () {
+    const newSaleId = 3;
+    sinon.stub(connection, 'execute').resolves([{ insertId: newSaleId }]);
+    
+    const newSaleIdReturned = await salesModel.insert();
+    expect(newSaleIdReturned).to.equal(newSaleId);
+  });
+
   afterEach(function () {
     sinon.restore();
   });
