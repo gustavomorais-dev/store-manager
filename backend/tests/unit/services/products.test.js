@@ -85,6 +85,62 @@ describe('Testes do PRODUCTS SERVICE:', function () {
     expect(responseService.data.message).to.be.equal('"name" length must be at least 5 characters long');
   });  
 
+  it('Atualiza com sucesso um produto na database', async function () {
+    const updatedProductFromModel = { id: 1, name: 'updated product' };
+    const updatedProductName = 'updated product';
+  
+    sinon.stub(productsModel, 'findById').resolves(productFromModel);
+    sinon.stub(productsModel, 'updateById').resolves(updatedProductFromModel);
+  
+    const productId = 1;
+  
+    const responseService = await productsService.updateProduct(productId, updatedProductName);
+  
+    expect(responseService.status).to.be.equal(HTTP_STATUS.OK);
+    expect(responseService.data).to.be.an('object');
+    expect(responseService.data).to.be.deep.equal(updatedProductFromModel);
+  });
+
+  it('Retorna erro se tentar atualizar um produto que não existe na database', async function () {
+    const updatedProductName = 'updated product';
+  
+    sinon.stub(productsModel, 'findById').resolves(undefined);
+  
+    const productId = 1;
+  
+    const responseService = await productsService.updateProduct(productId, updatedProductName);
+  
+    expect(responseService.status).to.be.equal(HTTP_STATUS.NOT_FOUND);
+    expect(responseService.data).to.be.an('object');
+    expect(responseService.data).to.be.deep.equal({ message: 'Product not found' });
+  });
+
+  it('Deleta corretamente um produto na database', async function () {
+    const deletedProductId = 1;
+  
+    sinon.stub(productsModel, 'findById').resolves(productFromModel);
+    sinon.stub(productsModel, 'deleteById').resolves({ productId: deletedProductId });
+  
+    const productId = 1;
+  
+    const responseService = await productsService.deleteProduct(productId);
+  
+    expect(responseService.status).to.be.equal(HTTP_STATUS.NO_CONTENT);
+    expect(responseService.data).to.be.equal(null);
+  });
+
+  it('Retorna erro se tentar deletar um produto que não existe na database', async function () {
+    sinon.stub(productsModel, 'findById').resolves(undefined);
+  
+    const productId = 141545;
+  
+    const responseService = await productsService.deleteProduct(productId);
+  
+    expect(responseService.status).to.be.equal(HTTP_STATUS.NOT_FOUND);
+    expect(responseService.data).to.be.an('object');
+    expect(responseService.data).to.be.deep.equal({ message: 'Product not found' });
+  });
+
   afterEach(function () {
     sinon.restore();
   });
