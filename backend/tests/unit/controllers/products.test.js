@@ -16,6 +16,7 @@ const {
   createdProductFromModel,
 } = require('../mocks/products.mock');
 const HTTP_STATUS = require('../../../src/utils/statusHTTP');
+const { productsMiddlewares } = require('../../../src/middlewares');
 
 describe('Testes do PRODUCTS CONTROLLER:', function () {
   it('Recupera os produtos com sucesso - status 200', async function () {
@@ -58,6 +59,34 @@ describe('Testes do PRODUCTS CONTROLLER:', function () {
     await productsController.createProduct(req, res);
     expect(res.status).to.have.been.calledWith(HTTP_STATUS.CREATED);
     expect(res.json).to.have.been.calledWith(createdProductFromModel);
+  });
+
+  it('Atualiza corretamente um produto', async function () {
+    const next = sinon.stub().returns();
+
+    const req = { params: { id: 1 },
+    body: { name: 'updated' } };
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    sinon.stub(productsService, 'updateProduct').resolves({
+      status: 200,
+      data: { id: 1, name: 'updated' },
+    });
+    
+    productsMiddlewares.validateUpdateProductKeys(req, res, next);
+    expect(next).to.have.been.calledWith();
+    
+    productsMiddlewares.validateUpdateProductValues(req, res, next);
+    expect(next).to.have.been.calledWith();
+
+    await productsController.updateProduct(req, res);
+
+    expect(res.status).to.have.been.calledWith(HTTP_STATUS.OK);
+    expect(res.json).to.have.been.calledWith({ id: 1, name: 'updated' });
   });
 
   afterEach(function () {
