@@ -3,8 +3,8 @@ const { productsController } = require('../controllers');
 
 route.get('/', productsController.getProducts);
 
-route.get('/:id', (req, res) => productsController.getProductById(req, res));
+route.get('/:id', productsController.getProductById);
 
-route.post('/', (req, res) => productsController.createProduct(req, res));
+route.post('/', productsController.createProduct);
 
 module.exports = route;

@@ -1,6 +1,6 @@
 const { productsModel } = require('../models');
 const HTTP_STATUS = require('../utils/statusHTTP');
-const { validateProductName } = require('./validations/validationsInputValues');
+const { validateProductName } = require('./validations/inputValues.validations');
 
 const getProducts = async () => {
   const products = await productsModel.findAll();
