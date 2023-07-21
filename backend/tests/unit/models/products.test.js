@@ -40,6 +40,24 @@ describe('Testes do PRODUCTS MODEL:', function () {
     expect(product).to.be.deep.equal(createdProductFromDB);
   });
 
+  it('Atualiza corretamente um produto na database', async function () {
+    const updatedProductFromDB = { id: 1, name: 'updated product' };
+    const updatedProductName = 'updated product';
+  
+    sinon.stub(connection, 'execute')
+      .onFirstCall()
+      .resolves([{ affectedRows: 1 }])
+      .onSecondCall()
+      .resolves([[updatedProductFromDB]]);
+  
+    const productId = 1;
+  
+    const updatedProduct = await productsModel.updateById(productId, updatedProductName);
+  
+    expect(updatedProduct).to.be.an('object');
+    expect(updatedProduct).to.be.deep.equal(updatedProductFromDB);
+  });
+
   it('Deleta corretamente um produto na database', async function () {
     const productId = 1;
     sinon.stub(connection, 'execute').resolves([{ affectedRows: 1 }]);

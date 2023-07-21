@@ -18,4 +18,6 @@ validateCreateSaleDBValues,
 salesController.createSale,
 );
 
+route.delete('/:id', salesController.deleteSale);
+
 module.exports = route;
