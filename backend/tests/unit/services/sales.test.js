@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
-const { salesModel } = require('../../../src/models');
+const { salesModel, salesProductsModel } = require('../../../src/models');
 const HTTP_STATUS = require('../../../src/utils/statusHTTP');
 const { salesFromService, salesFromModel, saleFromService, saleFromModel } = require('../mocks/sales.mock');
 const { salesService } = require('../../../src/services');
@@ -41,25 +41,41 @@ describe('Testes do SALES SERVICE:', function () {
     expect(responseService.data).to.be.deep.equal(responseData);
   });
 
-  // it('É possível criar uma nova venda', async function () {
-  //   sinon.stub(salesModel, 'findById').resolves([]);
+  it('Adiciona corretamente uma nova venda na database', async function () {
+    const newSaleIdFromModel = 3;
+    sinon.stub(salesModel, 'insert').resolves(newSaleIdFromModel);
+    sinon.stub(salesProductsModel, 'insert').resolves(newSaleIdFromModel);
 
-  //   const input = 21;
-  //   const responseService = await salesService.getSaleById(input);
+    const input = [
+      {
+        productId: 1,
+        quantity: 1,
+      },
+      {
+        productId: 2,
+        quantity: 5,
+      },
+    ];
 
-  //   expect(responseService.status).to.be.equal(HTTP_STATUS.CREATED);
-  //   expect(responseService.data).to.be.an('object');
-  //   expect(responseService.data).to.be.deep.equal({ message: 'Sale not found' });
+    const responseService = await salesService.createSale(input);
 
-  //   // ...
-  //   const next = sinon.stub().returns(); // crie um stub
-    
-  //   myMiddlewares.validateMiddleware(req, res, next); // passe o `next` para o middleware junto com o `req` e `res`
-    
-  //   expect(next).to.have.been.calledWith(); // verifica se o `next` foi chamado pelo middleware
-  //   // ...
-  // });
-
+    expect(responseService.status).to.be.equal(HTTP_STATUS.CREATED);
+    expect(responseService.data).to.be.an('object');
+    expect(responseService.data).to.be.deep.equal({
+      id: 3,
+      itemsSold: [
+        {
+          productId: 1,
+          quantity: 1,
+        },
+        {
+          productId: 2,
+          quantity: 5,
+        },
+      ],
+    });
+  });
+  
   afterEach(function () {
     sinon.restore();
   });
