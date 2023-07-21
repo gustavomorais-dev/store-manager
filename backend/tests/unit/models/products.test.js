@@ -40,6 +40,16 @@ describe('Testes do PRODUCTS MODEL:', function () {
     expect(product).to.be.deep.equal(createdProductFromDB);
   });
 
+  it('Deleta corretamente um produto na database', async function () {
+    const productId = 1;
+    sinon.stub(connection, 'execute').resolves([{ affectedRows: 1 }]);
+
+    const result = await productsModel.deleteById(productId);
+
+    expect(result).to.be.an('object');
+    expect(result).to.be.deep.equal({ productId });
+  });
+
   afterEach(function () {
     sinon.restore();
   });
