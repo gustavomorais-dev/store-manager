@@ -41,6 +41,25 @@ describe('Testes do SALES SERVICE:', function () {
     expect(responseService.data).to.be.deep.equal(responseData);
   });
 
+  // it('É possível criar uma nova venda', async function () {
+  //   sinon.stub(salesModel, 'findById').resolves([]);
+
+  //   const input = 21;
+  //   const responseService = await salesService.getSaleById(input);
+
+  //   expect(responseService.status).to.be.equal(HTTP_STATUS.CREATED);
+  //   expect(responseService.data).to.be.an('object');
+  //   expect(responseService.data).to.be.deep.equal({ message: 'Sale not found' });
+
+  //   // ...
+  //   const next = sinon.stub().returns(); // crie um stub
+    
+  //   myMiddlewares.validateMiddleware(req, res, next); // passe o `next` para o middleware junto com o `req` e `res`
+    
+  //   expect(next).to.have.been.calledWith(); // verifica se o `next` foi chamado pelo middleware
+  //   // ...
+  // });
+
   afterEach(function () {
     sinon.restore();
   });
