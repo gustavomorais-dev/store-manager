@@ -17,6 +17,7 @@ const {
   saleCreatedFromServiceOk,
 } = require('../mocks/sales.mock');
 const { salesMiddlewares } = require('../../../src/middlewares');
+const { productsModel } = require('../../../src/models');
 
 describe('Testes do SALES CONTROLLER:', function () {
   it('Recupera as vendas com sucesso - status 200', async function () {
@@ -82,6 +83,120 @@ describe('Testes do SALES CONTROLLER:', function () {
 
     expect(res.status).to.have.been.calledWith(HTTP_STATUS.CREATED);
     expect(res.json).to.have.been.calledWith(saleCreatedFromService);
+  });
+
+  it('Retorna o erro esperado ao criar uma venda sem o campo productId', async function () {
+    const req = {
+      params: {},
+      body: [
+        {
+          quantity: 1,
+        },
+        {
+          productId: 2,
+          quantity: 5,
+        },
+      ],
+    };
+  
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+  
+    await salesMiddlewares.validateCreateSaleKeys(req, res);
+  
+    expect(res.status).to.have.been.calledWith(HTTP_STATUS.BAD_REQUEST);
+    expect(res.json).to.have.been.calledWith({
+      message: '"productId" is required',
+    });
+  });
+
+  it('Retorna o erro esperado ao criar uma venda sem o campo quantity', async function () {
+    const req = {
+      params: {},
+      body: [
+        {
+          productId: 1,
+          quantity: 1,
+        },
+        {
+          productId: 2,
+        },
+      ],
+    };
+  
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+  
+    await salesMiddlewares.validateCreateSaleKeys(req, res);
+  
+    expect(res.status).to.have.been.calledWith(HTTP_STATUS.BAD_REQUEST);
+    expect(res.json).to.have.been.calledWith({
+      message: '"quantity" is required',
+    });
+  });
+
+  it('Retorna o erro esperado ao criar uma venda com o campo quantidade inválido', async function () {
+    const req = {
+      params: {},
+      body: [
+        {
+          productId: 1,
+          quantity: 1,
+        },
+        {
+          productId: 1,
+          quantity: 0,
+        },
+      ],
+    };
+  
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+  
+    await salesMiddlewares.validateCreateSaleValues(req, res);
+  
+    expect(res.status).to.have.been.calledWith(HTTP_STATUS.UNPROCESSABLE_ENTITY);
+    expect(res.json).to.have.been.calledWith({
+      message: '"quantity" must be greater than or equal to 1',
+    });
+  });
+
+  it('Retorna o erro esperado ao criar uma venda com o id de produto que não existe', async function () {
+    const req = {
+      params: {},
+      body: [
+        {
+          productId: 21515,
+          quantity: 1,
+        },
+        {
+          productId: 1,
+          quantity: 5,
+        },
+      ],
+    };
+  
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    const stub = sinon.stub(productsModel, 'findById');
+    stub.onFirstCall().resolves(undefined);
+    stub.onSecondCall().resolves(undefined);
+
+    await salesMiddlewares.validateCreateSaleDBValues(req, res);
+  
+    expect(res.status).to.have.been.calledWith(HTTP_STATUS.NOT_FOUND);
+    expect(res.json).to.have.been.calledWith({
+      message: 'Product not found',
+    });
   });
 
   afterEach(function () {
