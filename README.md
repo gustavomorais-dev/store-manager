@@ -91,7 +91,7 @@ DELETE http://localhost:3001/sales/id
 
 - Atualiza a quantidade de um produto em uma venda de acordo com o id da venda e do produto (substitua 'id's por ids numérico):
 ```
-PUT http://localhost:3001/sales/:saleId/products/:productId/quantity
+PUT http://localhost:3001/sales/saleId/products/productId/quantity
 ```
 
     > O corpo da requisição deve ter a seguinte estrutura:
